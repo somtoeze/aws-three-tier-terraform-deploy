@@ -59,7 +59,7 @@ jobs:
         run: ./tfsec . || true
 
       - name: Terraform Plan
-        run: terraform plan 
+        run: terraform plan -refresh=false
 
       # - name: Terraform Apply.
       #   run: terraform apply -auto-approve 
