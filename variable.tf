@@ -83,11 +83,11 @@ variable "zone_name" {
   default     = "example.com"
 }
 
-# variable "domain-name" {
-#   description = "Domain name to be created"
-#   type        = string
-#   default     = "myapp.example.com"
-# }
+variable "domain-name" {
+  description = "Domain name to be created"
+  type        = string
+  default     = "myapp.example.com"
+}
 
 # variable "namecheap_api_user" {
 #   description = "Namecheap API user"
