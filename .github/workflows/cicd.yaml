@@ -65,38 +65,69 @@ jobs:
           sudo mv ./kubectl /usr/local/bin/kubectl
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-      # Remove this block after the first successful apply — Helm releases will be
+     
+     
+     
+          # Remove this block after the first successful apply — Helm releases will be
       # tracked in state and the cycle/conflict won't occur on subsequent runs.
-      #===============================
-      # - name: 'authenticate to EKS Cluster'
-      #   run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
+      #===================================================================================
 
-      # - name: Remove Helm releases from state and cluster to avoid conflict
-      #   continue-on-error: true
-      #   run: |
-      #     terraform state rm 'module.eks-deployment.helm_release.nginx_ingress' || true
-      #     terraform state rm 'module.eks-deployment.helm_release.cert_manager' || true
-      #     terraform state rm 'module.eks-deployment.helm_release.argocd' || true
-      #     helm uninstall nginx-ingress --namespace ingress-nginx || true
-      #     helm uninstall cert-manager --namespace cert-manager || true
-      #     helm uninstall argocd --namespace argocd || true
+      - name: 'authenticate to EKS Cluster'
+        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
+
+      - name: Remove Helm releases from state and cluster to avoid conflict
+        continue-on-error: true
+        run: |
+          terraform state rm 'module.eks-deployment.helm_release.nginx_ingress' || true
+          terraform state rm 'module.eks-deployment.helm_release.cert_manager' || true
+          terraform state rm 'module.eks-deployment.helm_release.argocd' || true
+          helm uninstall nginx-ingress --namespace ingress-nginx --wait=false || true
+          helm uninstall cert-manager --namespace cert-manager --wait=false || true
+          helm uninstall argocd --namespace argocd --wait=false || true
+
+      - name: Wait for AWS NLB to be fully deleted before Terraform touches the VPC
+        run: |
+          echo "Waiting for NLB created by nginx-ingress to be deleted..."
+          for i in $(seq 1 24); do
+            COUNT=$(aws elbv2 describe-load-balancers --region ${{ secrets.AWS_REGION }} \
+              --query "length(LoadBalancers[?contains(DNSName, 'elb')])" --output text 2>/dev/null || echo 0)
+            if [ "$COUNT" = "0" ]; then
+              echo "NLB deleted. Proceeding."
+              break
+            fi
+            echo "NLB still exists, waiting 15s... ($i/24)"
+            sleep 15
+          done
 
       - name: Terraform Plan
         run: terraform plan -refresh=false
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      # - name: Terraform Apply
+      #   run: terraform apply -auto-approve
 
       # Note this part depends on the manual DNS Route 53 to Namecheap or GoDaddy setup.
       # ===================================================================================
-      - name: 'authenticate to EKS Cluster'
-        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
+      # - name: 'authenticate to EKS Cluster'
+      #   run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
       
-      - name: 'Deploying the ClusterIssuer to EKS'
-        run: kubectl apply -f ClusterIssuer.yaml
+      # - name: 'Deploying the ClusterIssuer to EKS'
+      #   run: kubectl apply -f ClusterIssuer.yaml
 
-      - name: 'Deploying argocd ingress rule to EKS'
-        run: kubectl apply -f ingress-argocd.yaml -n argocd
+      # - name: 'Deploying argocd ingress rule to EKS'
+      #   run: kubectl apply -f ingress-argocd.yaml -n argocd
+
+
+
+
+
+
+
+        
+        
+        
+        #===============================================
+      
+        
 
       - name: Terraform Destroy
         run: terraform destroy -auto-approve 
