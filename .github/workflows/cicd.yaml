@@ -58,12 +58,25 @@ jobs:
       - name: 'tfsec Security Scan.'
         run: ./tfsec . || true
 
-      - name: Remove Helm releases from state to avoid dependency cycle
+      - name: 'install kubectl and helm'
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: 'authenticate to EKS Cluster'
+        run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
+
+      - name: Remove Helm releases from state and cluster to avoid conflict
         continue-on-error: true
         run: |
           terraform state rm 'module.eks-deployment.helm_release.nginx_ingress' || true
           terraform state rm 'module.eks-deployment.helm_release.cert_manager' || true
           terraform state rm 'module.eks-deployment.helm_release.argocd' || true
+          helm uninstall nginx-ingress --namespace ingress-nginx || true
+          helm uninstall cert-manager --namespace cert-manager || true
+          helm uninstall argocd --namespace argocd || true
 
       - name: Terraform Plan
         run: terraform plan -refresh=false
@@ -71,15 +84,8 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
 
-
-        # Note this part depends on the mannaul Dns route 53 to namecheap or godaddy setup.
-       # ===================================================================================
-      - name: 'install kubectl'
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl
-
+      # Note this part depends on the manual DNS Route 53 to Namecheap or GoDaddy setup.
+      # ===================================================================================
       - name: 'authenticate to EKS Cluster'
         run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region us-east-1
       
