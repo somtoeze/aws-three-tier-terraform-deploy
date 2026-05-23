@@ -12,7 +12,7 @@ This repository contains the infrastructure-as-code (IaC) setup using **Terrafor
 ### step (3) Check AWS route53 hosted zone nameservers. and copy them to namecheap or godaddy and update it.
 
 ### check this video for namecheap
-### check this video for godaddy.
+### check this video for godaddy..
 
 ### step (4) After updating the nameserver in the selected alterneting domain provider, you wait for 10 minutes, then 
 ### step (5) uncomment the .github/workflow/cicd.yaml line [70-83] and push it back to run the pipeline again by this time. the domain have been populated and certmanager and nginx will be able to make use of it. 
