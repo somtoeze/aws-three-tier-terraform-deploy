@@ -11,11 +11,11 @@ spec:
   ingressClassName: external-nginx
   tls:
   - hosts:
-    - argocd.iyekdigitalcloud.online
+    - argocd.nediva.online
 
-    secretName: argocd-iyekdigitalcloud-online
+    secretName: argocd-nediva.online
   rules:
-  - host: argocd.iyekdigitalcloud.online
+  - host: argocd.nediva.online
     http:
       paths:
       - path: /

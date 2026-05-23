@@ -11,10 +11,11 @@ capacity_type        = "ON_DEMAND"
 ami_type             = "AL2_x86_64"
 label_one            = "system-nodepool"
 eks_version          = "1.32"
-domain-name          = "iyekdigitalcloud.online"
+domain-name          = "nediva.online"
 cluster_name         = "eks-cluster"
 repository_name      = "eks-repository"
 email                = "somtochukwueze95@gmail.com"
 db_instance_class    = "db.t3.micro"
 db_allocated_storage = 20
-zone_name            = "nediva.online"
+zone_name           = "nediva.online"
+
