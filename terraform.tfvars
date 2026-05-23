@@ -14,8 +14,7 @@ eks_version          = "1.32"
 domain-name          = "iyekdigitalcloud.online"
 cluster_name         = "eks-cluster"
 repository_name      = "eks-repository"
-email                = "craigfedrick@gmail.com"
+email                = "somtochukwueze95@gmail.com"
 db_instance_class    = "db.t3.micro"
 db_allocated_storage = 20
-zone_name           = "iyekdigitalcloud.online"
-
+zone_name            = "nediva.online"
