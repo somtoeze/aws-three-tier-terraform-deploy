@@ -28,5 +28,5 @@ resource "aws_route53_record" "name2" {
   name    = "argocd.${var.domain-name}" # Use a subdomain for CNAME
   type    = "CNAME"
   ttl     = 300
-  records = [data.aws_lb.argocd_lb.dns_name]
+  records = [var.nginx_lb_ip]
 }
