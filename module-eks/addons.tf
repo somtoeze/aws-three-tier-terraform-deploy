@@ -52,17 +52,12 @@ resource "helm_release" "cert_manager" {
 #==================================================
 
 resource "helm_release" "argocd" {
-  name             = "argocd"
-  repository       = "https://argoproj.github.io/argo-helm"
-  chart            = "argo-cd"
-  version          = "5.51.6"
-  namespace        = "argocd"
-  create_namespace = true
-  values           = [file("${path.module}/argocd-values.yaml")]
-  depends_on       = [helm_release.nginx_ingress, helm_release.cert_manager]
-  
-  # Add these lines to fix the timeout
-  timeout          = 600  # Timeout in seconds (10 minutes)
-  wait             = true
-  wait_for_jobs    = true
+    name             = "argocd"
+    repository       = "https://argoproj.github.io/argo-helm"
+    chart            = "argo-cd"
+    version          = "5.51.6"
+    namespace        = "argocd"
+    create_namespace = true
+    values = [file("${path.module}/argocd-values.yaml")]
+    depends_on = [ helm_release.nginx_ingress, helm_release.cert_manager]
 }
