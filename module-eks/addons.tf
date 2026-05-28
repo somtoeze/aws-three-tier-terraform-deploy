@@ -52,12 +52,12 @@ resource "helm_release" "cert_manager" {
 #==================================================
 
 resource "helm_release" "argocd" {
-    name             = "argocd"
-    repository       = "https://argoproj.github.io/argo-helm"
-    chart            = "argo-cd"
-    version          = "5.51.6"
-    namespace        = "argocd"
-    create_namespace = true
-    values = [file("${path.module}/argocd-values.yaml")]
-    depends_on = [ helm_release.nginx_ingress, helm_release.cert_manager]
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  version          = "5.51.6"
+  namespace        = "argocd"
+  create_namespace = true
+  values           = [file("${path.module}/argocd-values.yaml")]
+  depends_on       = [helm_release.nginx_ingress, helm_release.cert_manager]
 }
