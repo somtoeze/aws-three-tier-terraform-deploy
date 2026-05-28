@@ -65,4 +65,4 @@ resource "helm_release" "argocd" {
   timeout          = 600  # Timeout in seconds (10 minutes)
   wait             = true
   wait_for_jobs    = true
-}}
+}
